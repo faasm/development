@@ -6,40 +6,62 @@ PROJ_ROOT=${THIS_DIR}/..
 
 pushd ${PROJ_ROOT} > /dev/null
 
+export FAABRIC_VERSION=$(cat faabric/VERSION)
+export FAASM_VERSION=$(cat faasm/VERSION)
+export CPP_VERSION=$(cat cpp/VERSION)
+export PYTHON_VERSION=$(cat python/VERSION)
+
+# Tolerate differences in naming while updating repos
+export FAASM_CLI_IMAGE=${CLI_IMAGE}
+export CPP_CLI_IMAGE=${SYSROOT_CLI_IMAGE}
+export PYTHON_CLI_IMAGE=${CPYTHON_CLI_IMAGE}
+
+if [[ -z "$FAABRIC_CLI_IMAGE" ]]; then
+    export FAABRIC_CLI_IMAGE=faasm/faabric:${FAABRIC_VERSION}
+fi
+
+if [[ -z "$FAASM_CLI_IMAGE" ]]; then
+    export FAASM_CLI_IMAGE=faasm/cli:${FAASM_VERSION}
+fi
+
+if [[ -z "$CPP_CLI_IMAGE" ]]; then
+    export CPP_CLI_IMAGE=faasm/cpp-sysroot:${CPP_VERSION}
+fi
+
+if [[ -z "$PYTHON_CLI_IMAGE" ]]; then
+    export PYTHON_CLI_IMAGE=faasm/cpython:${PYTHON_VERSION}
+fi
+
 if [[ -z "$1" ]]; then
     echo "Must specify which CLI"
     exit 1
+
+elif [[ "$1" == "faabric" ]]; then
+    MODE="faabric"
+    CLI_CONTAINER="faabric-cli"
+    echo "Faabric CLI (${FAABRIC_CLI_IMAGE})"
+
 elif [[ "$1" == "faasm" ]]; then
     MODE="faasm"
     CLI_CONTAINER="faasm-cli"
+    echo "Faasm CLI (${FAASM_CLI_IMAGE})"
+
 elif [[ "$1" == "cpp" ]]; then
     MODE="cpp"
     CLI_CONTAINER="cpp-cli"
+    echo "CPP CLI (${CPP_CLI_IMAGE})"
+
 elif [[ "$1" == "python" ]]; then
     MODE="python"
     CLI_CONTAINER="python-cli"
+    echo "Python CLI (${PYTHON_CLI_IMAGE})"
+
 else
-    echo "Unrecognised CLI. Must be one of faasm, cpp or python"
+    echo "Unrecognised CLI. Must be one of faabric, faasm, cpp or python"
     exit 1
 fi
 
-FAASM_VERSION=$(cat faasm/VERSION)
-CPP_VERSION=$(cat cpp/VERSION)
-PYTHON_VERSION=$(cat python/VERSION)
-
-if [[ -z "$CLI_IMAGE" ]]; then
-    CLI_IMAGE=faasm/cli:${FAASM_VERSION}
-fi
-if [[ -z "$SYSROOT_CLI_IMAGE" ]]; then
-    SYSROOT_CLI_IMAGE=faasm/cpp-sysroot:${CPP_VERSION}
-fi
-if [[ -z "$CPYTHON_CLI_IMAGE" ]]; then
-    CPYTHON_CLI_IMAGE=faasm/cpython:${PYTHON_VERSION}
-fi
-
 INNER_SHELL=${SHELL:-"/bin/bash"}
-
-echo "Running ${CLI_CONTAINER}"
 
 # Make sure the CLI is running already in the background (avoids creating a new
 # container every time)

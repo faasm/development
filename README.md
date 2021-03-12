@@ -1,50 +1,33 @@
 # Faasm Development Repo
 
-This repo collects all the sub-repositories of the Faasm project and is used for
-development.
+This repo is used for developing the [Faasm](https://github.com/faasm) project.
 
-A Faasm monorepo would be prohibitively large, builds would take ages, and most
-development only requires changing one part of the system.
+Having everything related to both the client and server side of Faasm in a
+single repo would be prohibitively large and cause _very_ long builds.
+Additionally, the system should really be treated in layers, independent of
+those above them. 
 
 However, it's still convenient to have everything in one place, especially when
 you _do_ need to touch all parts. Hence the existence of this repo. 
 
-## Repo structure
+## Layers
 
-Client-side (i.e. compiling wasm)
+The Faasm project has a top layer which creates WebAssembly files, which are
+executed by the Faasm runtime below, which depends on Faabric for messaging and 
+state. 
 
-- [faasm/cpp](https://github.com/faasm/cpp) - tools for building C/C++ for using
+- [faasm/cpp](https://github.com/faasm/cpp) - tools for building C/C++ for use
   in Faasm.
 - [faasm/python](https://github.com/faasm/python) - tools for building CPython
   and Python functions for use in Faasm.
-
-Server-side (i.e. executing wasm)
-
-- [faasm/faasm](https://github.com/faasm/faasm) - the WebAssembly runtime.
+- [faasm/faasm](https://github.com/faasm/faasm) - the Faasm runtime (independent
+  of specific languages used to compile the WebAssembly)
 - [faasm/faabric](https://github.com/faasm/faabric) - serverless scheduling,
   messaging and state (independent of WebAssembly).
 
-Note that Faabric is edited as a submodule of Faasm.
+## Initial Set-up
 
-## Use
-
-Once you've set up the repo, you can start the CLI for whichever project you 
-want to work on:
-
-```
-# Faasm 
-./bin/cli.sh faasm
-
-# C++ applications
-./bin/cli.sh cpp
-
-# Python applications
-./bin/cli.sh python
-```
-
-## Set-up
-
-First you need to set up submodules:
+First you need to update all the submodules:
 
 ```
 git submodule update --init --recursive
@@ -57,3 +40,21 @@ can initialise with:
 ./bin/refresh_local.sh
 ```
 
+## Use
+
+Once you've set up the repo, you can start the CLI for whichever project you 
+want to work on:
+
+```
+# C++ applications
+./bin/cli.sh cpp
+
+# Python applications
+./bin/cli.sh python
+
+# Faasm 
+./bin/cli.sh faasm
+
+# Faabric
+./bin/cli.sh faabric
+```
