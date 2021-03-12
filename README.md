@@ -2,6 +2,9 @@
 
 This repo is used for developing the [Faasm](https://github.com/faasm) project.
 
+*Note* submodules in this folder should be up-to-date with the latest `master`.
+Don't push your local branch checkouts to them.
+
 Having everything related to both the client and server side of Faasm in a
 single repo would be prohibitively large and cause _very_ long builds.
 Additionally, the system should really be treated in layers, independent of
