@@ -43,6 +43,13 @@ can initialise with:
 ./bin/refresh_local.sh
 ```
 
+If you want to run Python scripts outside the containerised environments, you 
+can set up a suitable Python virtual envrionment with:
+
+```
+./bin/create_venv.sh
+```
+
 ## Use
 
 Once you've set up the repo, you can start the CLI for whichever project you 
